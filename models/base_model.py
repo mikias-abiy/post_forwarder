@@ -40,6 +40,15 @@ class BaseModel:
         s = "[{}] ({}) {}".format(type(self).__name__, self.id, self.__dict__)
         return (s)
 
+    def update(self, *args, **kwargs):
+        """
+        """
+        for key in kwargs.keys():
+            date_types = ["updated_at", "created_at", "start_time", "end_time"] 
+            if key in date_types:
+                setattr(self, key, datetime.fromisoformat(kwargs[key]))
+            elif key != "__class__":
+                setattr(self, key, kwargs[key])
     def save(self):
         """
         save: updates the the value of the instance attriubte updated_at
@@ -65,8 +74,10 @@ class BaseModel:
             if ("message" in self_dict.keys()):
                 self_dict["message_id"] = self_dict["message"].message_id
                 self_dict.pop("message")
-            self_dict["start_time"] = self_dict["start_time"].isoformat()
-            self_dict["end_time"] = self_dict["end_time"].isoformat()
+            if getattr(self, "start_time", None):
+                self_dict["start_time"] = self_dict["start_time"].isoformat()
+            if getattr(self, "end_time", None):
+                self_dict["end_time"] = self_dict["end_time"].isoformat()
 
         self_dict["created_at"] = self_dict["created_at"].isoformat()
         self_dict["updated_at"] = self_dict["updated_at"].isoformat()

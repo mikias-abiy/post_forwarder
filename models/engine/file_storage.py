@@ -83,8 +83,16 @@ class FileStorage:
         try:
             with open(FileStorage.__file_path, 'r') as file:
                 json_str = file.read()
-                if len(json_str) != 0:
+                if len(json_str):
                     _raw = json.loads(json_str)
+                    if len(FileStorage.__objects):
+                        for key in _raw.keys():
+                            for key_in in FileStorage.__objects:
+                                if (key == key_in):
+                                    FileStorage.__objects[key_in].update(**_raw[key])
+                                    break
+                        return
+    
                     for key in _raw.keys():
                         if _raw[key]['__class__'] == 'Post':
                             from models.post import Post

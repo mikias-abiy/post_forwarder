@@ -20,7 +20,7 @@ class Post(BaseModel):
     def __init__(self, *args, **kwargs):
         super().__init__(**kwargs)
     
-    async def start(self, bot: AsyncTeleBot, to_gc):
+    def start(self, bot: AsyncTeleBot, to_gc):
         print("Posted started")
         
         print(datetime.datetime.now(), "\n", self.start_time)
@@ -34,6 +34,8 @@ class Post(BaseModel):
         while datetime.datetime.now() <= self.end_time and self.status == 'active':
             print("Started posting")
             self.started = True
+            self.save()
+            storage.reload()
             for gc in to_gc:
                 print("sending message")
                 if self.message.text is None:
@@ -42,22 +44,31 @@ class Post(BaseModel):
                     text = self.message.text
 
                 if self.message.video:
-                    await bot.send_video(gc, self.message.video.file_id, caption=text)
+                    bot.send_video(gc, self.message.video.file_id, caption=text)
                 elif self.message.photo:
-                    await bot.send_photo(gc, self.message.photo.file_id, caption=text)
+                    bot.send_photo(gc, self.message.photo.file_id, caption=text)
                 elif self.message.sticker:
-                    await bot.send_sticker(gc, self.message.sticker.file_id)
+                    bot.send_sticker(gc, self.message.sticker.file_id)
                 elif self.message.audio:
-                    await bot.send_audio(gc, self.message.audio.file_id, caption=text)
+                    bot.send_audio(gc, self.message.audio.file_id, caption=text)
                 elif self.message.animation:
-                    await bot.send_animation(gc, self.message.animation.file_id, caption=text)
+                    bot.send_animation(gc, self.message.animation.file_id, caption=text)
                 elif self.message.document:
-                    await bot.send_document(gc, self.message.document.file_id, caption=text)
+                    bot.send_document(gc, self.message.document.file_id, caption=text)
                 else:
-                    await bot.send_message(gc, text)
+                    bot.send_message(gc, text)
+            if self.restart or self.status == 'inactive':
+                self.restart = False
+                self.started = False
+                self.stop = False
+                self.save()
+                break
             time.sleep(self.repetition * 60 * 60)
 
         if datetime.datetime.now() >= self.end_time:
             print("Post removed")
             storage.remove(self)
+            storage.save()
+        self.started = False
+        self.save()
         print("Exited Post")
