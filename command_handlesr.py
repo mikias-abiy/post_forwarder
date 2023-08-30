@@ -44,6 +44,18 @@ def add_to(message: types.Message):
     _gcm.add_to(message.chat.id)
     bot.send_message(message.chat.id, "This group is added to the list of group which postes are forwarded to.")
 
+def remove_to(message: types.Message):
+    if message.from_user.id not in ADMIN:
+        bot.send_message(message.chat.id, "You are not authorized to use this command.")
+        return
+    elif message.chat.type not in ["group", "supergroup"]:
+        bot.send_message(message.chat.id, "Use this command in group chat.")
+        return
+
+    _gcm.remove_to(message.chat.id)
+    bot.send_message(message.chat.id, "This group is removed the list of group which postes are forwarded to.")
+
+
 
 def get_post_from(message: types.Message):
     if message.from_user.id not in ADMIN or message.chat.id != _gcm.get_from():
@@ -431,4 +443,4 @@ def register_handlers():
     'text', 'sticker'], func=lambda message: message.text[0] != '/' if message.text else True)
     bot.register_message_handler(set_from, func=lambda message: message.text == '/set_from')
     bot.register_message_handler(add_to, func=lambda message: message.text == '/add_to')
-    
+    bot.register_message_handler(add_to, func=lambda message: message.text == '/remove_to')
