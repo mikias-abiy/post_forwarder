@@ -20,4 +20,4 @@ def post_starter():
         for value in posts.values():
             if value.ready:
                 if not value.started and value.status == 'active':
-                    threading.Thread(target=value.start, args=(bot, _gcm.get_to())).start()
+                    threading.Thread(target=value.start, args=(bot, _gcm.get_to)).start()

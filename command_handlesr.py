@@ -158,8 +158,9 @@ def callback_repetition(call):
 
     if call.data[11] == 'e' and call.data[12] == '_':
         call.data = f"edit_{post_id}"
-        post.restart = True
-        post.save()
+        if post.started:
+            post.restart = True
+            post.save()
         edit_post(call, True)
         return
 
@@ -209,8 +210,9 @@ def callback_start_time(call):
 
     if call.data[11] == 'e' and call.data[12] == '_':
         call.data = f"edit_{post_id}"
-        post.restart = True
-        post.save()
+        if post.started:
+            post.restart = True
+            post.save()
         edit_post(call, True)
         return
 
@@ -260,8 +262,9 @@ def callback_end_time(call):
 
     if call.data[9] == 'e' and call.data[10] == '_':
         call.data = f"edit_{post_id}"
-        post.restart = True
-        post.save()
+        if post.started:
+            post.restart = True
+            post.save()
         edit_post(call, True)
         return
 
@@ -425,7 +428,7 @@ def register_handlers():
     bot.register_message_handler(command_start, func=lambda message: message.text == '/start')
     bot.register_message_handler(command_status, func=lambda message: message.text == '/status')
     bot.register_message_handler(get_post_from, content_types=['audio', 'photo', 'voice', 'video', 'document',
-    'text', 'sticker'], func=lambda message: message.text[0] != '/')
+    'text', 'sticker'], func=lambda message: message.text[0] != '/' if message.text else True)
     bot.register_message_handler(set_from, func=lambda message: message.text == '/set_from')
     bot.register_message_handler(add_to, func=lambda message: message.text == '/add_to')
     
