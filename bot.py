@@ -4,6 +4,6 @@
 # Importing Telegram bot related modules and packages.
 from telebot import TeleBot
 
-BOT_API_TOKEN = "6462805520:AAG_9QhJZCP91opnV95sjN6CJ-uzWADj7yE"
+BOT_API_TOKEN = "Your bot's API token"
 
 bot = TeleBot(BOT_API_TOKEN)
